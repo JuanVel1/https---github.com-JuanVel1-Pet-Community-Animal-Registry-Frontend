@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=Pet-Community-Animal-Registry-Frontend
+PRODUCT_BUNDLE_IDENTIFIER=org.example.pet_community_animal_registry_frontend.Pet-Community-Animal-Registry-Frontend$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
