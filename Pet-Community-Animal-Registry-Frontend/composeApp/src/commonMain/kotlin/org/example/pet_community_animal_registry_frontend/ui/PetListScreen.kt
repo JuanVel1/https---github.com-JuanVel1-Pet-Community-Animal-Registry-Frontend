@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +24,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +55,7 @@ fun PetListScreen(
     var pets by remember { mutableStateOf<List<Pet>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    var petToDelete by remember { mutableStateOf<Pet?>(null) }
 
     fun loadPets() {
         scope.launch {
@@ -61,7 +64,7 @@ fun PetListScreen(
             try {
                 pets = api.getPets(token)
             } catch (e: Exception) {
-                error = e.message ?: "Failed to load pets"
+                error = e.message ?: "Falla al cargar las mascotas"
             } finally {
                 isLoading = false
             }
@@ -75,13 +78,13 @@ fun PetListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pet Registry") },
+                title = { Text("Registro de mascotas") },
                 actions = {
                     androidx.compose.material3.TextButton(onClick = { loadPets() }) {
                         Text("↻")
                     }
                     androidx.compose.material3.TextButton(onClick = onLogout) {
-                        Text("Logout")
+                        Text("Salir")
                     }
                 }
             )
@@ -103,7 +106,7 @@ fun PetListScreen(
                     Text(text = error!!, color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(8.dp))
                     androidx.compose.material3.Button(onClick = { loadPets() }) {
-                        Text("Retry")
+                        Text("Intentar de nuevo")
                     }
                 }
             } else {
@@ -115,20 +118,43 @@ fun PetListScreen(
                         PetItem(
                             pet = pet,
                             onClick = { onPetClick(pet) },
-                            onDelete = {
-                                scope.launch {
-                                    try {
-                                        api.deletePet(token, pet.id!!)
-                                        loadPets()
-                                    } catch (e: Exception) {
-                                        // Handle delete error
-                                    }
-                                }
-                            }
+                            onDelete = { petToDelete = pet }
                         )
                     }
                 }
             }
+        }
+        
+        // Delete confirmation dialog
+        petToDelete?.let { pet ->
+            AlertDialog(
+                onDismissRequest = { petToDelete = null },
+                title = { Text("Confirmar eliminación") },
+                text = { Text("¿Estás seguro de que deseas eliminar a ${pet.name}?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                try {
+                                    api.deletePet(token, pet.id!!)
+                                    petToDelete = null
+                                    loadPets()
+                                } catch (e: Exception) {
+                                    error = e.message ?: "Error al eliminar mascota"
+                                    petToDelete = null
+                                }
+                            }
+                        }
+                    ) {
+                        Text("Confirmar", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { petToDelete = null }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
         }
     }
 }

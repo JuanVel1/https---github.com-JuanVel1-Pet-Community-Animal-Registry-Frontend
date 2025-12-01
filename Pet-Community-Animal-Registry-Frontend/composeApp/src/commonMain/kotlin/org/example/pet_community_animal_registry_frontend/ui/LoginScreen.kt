@@ -46,7 +46,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if (isRegistering) "Create Account" else "Welcome Back",
+            text = if (isRegistering) "Registrarse \uD83D\uDC36" else "Bienvenido a \uD83D\uDC36 \n LocalPet Registry",
             style = MaterialTheme.typography.headlineMedium
         )
         

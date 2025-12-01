@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,7 +59,11 @@ fun PetDetailScreen(
         }
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
@@ -97,7 +103,7 @@ fun PetDetailScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 OutlinedButton(onClick = onCancel) {
-                    Text("Cancel")
+                    Text("Cancelar")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
@@ -113,8 +119,10 @@ fun PetDetailScreen(
                                     status = status,
                                     contact = contact,
                                     photoUrl = photoUrl.ifBlank { null },
-                                    userId = pet?.userId ?: 0 // Backend should handle userId from token or we need to store it
+                                    userId = pet?.userId
                                 )
+                                // Debug: print what we're sending
+                                println("DEBUG: Sending pet: $newPet")
                                 if (pet == null) {
                                     api.addPet(token, newPet)
                                 } else {
@@ -122,7 +130,7 @@ fun PetDetailScreen(
                                 }
                                 onSave()
                             } catch (e: Exception) {
-                                error = e.message ?: "Failed to save pet"
+                                error = e.message ?: "Falla al guardar la mascota"
                             } finally {
                                 isLoading = false
                             }
@@ -133,7 +141,7 @@ fun PetDetailScreen(
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     } else {
-                        Text("Save")
+                        Text("Guardar")
                     }
                 }
             }

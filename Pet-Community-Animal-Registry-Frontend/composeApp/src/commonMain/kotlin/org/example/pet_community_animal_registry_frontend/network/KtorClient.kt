@@ -16,6 +16,7 @@ object KtorClient {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true
+                explicitNulls = false  // Don't fail if nulls are omitted
             })
         }
         defaultRequest {

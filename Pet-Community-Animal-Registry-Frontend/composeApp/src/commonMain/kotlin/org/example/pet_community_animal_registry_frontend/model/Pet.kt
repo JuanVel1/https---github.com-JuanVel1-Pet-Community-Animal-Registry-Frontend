@@ -10,5 +10,5 @@ data class Pet(
     val photoUrl: String? = null,
     val status: String, // e.g., "Lost", "Found", "Home"
     val contact: String,
-    val userId: Int
+    val userId: Int? = null  // Backend extracts this from JWT token
 )
